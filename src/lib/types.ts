@@ -182,4 +182,64 @@ export const NYC_BOUNDS: MapBounds = {
   east: -73.7004
 }
 
-export const NYC_CENTER = { lat: 40.7128, lng: -74.006 } 
+export const NYC_CENTER = { lat: 40.7128, lng: -74.006 }
+
+export interface ZillowProperty {
+  zpid: string
+  address: string
+  city: string
+  state: string
+  zipcode: string
+  price: number
+  bedrooms: number
+  bathrooms: number
+  livingArea: number
+  lotSize: number
+  yearBuilt: number
+  lastSoldPrice?: number
+  lastSoldDate?: string
+  zestimate?: number
+  rentZestimate?: number
+  latitude: number
+  longitude: number
+}
+
+export interface PropertySearchResult {
+  id: string
+  address: string
+  price: number
+  bedrooms: number
+  bathrooms: number
+  livingArea: number
+  lotSize: number
+  yearBuilt: number
+  latitude: number
+  longitude: number
+  imageUrl?: string
+  status: 'active' | 'pending' | 'sold'
+  daysOnMarket: number
+  priceHistory?: {
+    date: string
+    price: number
+  }[]
+}
+
+export interface HomeCard {
+  id: string
+  title: string
+  description: string
+  price: number
+  address: string
+  bedrooms: number
+  bathrooms: number
+  livingArea: number
+  lotSize: number
+  yearBuilt: number
+  imageUrl: string
+  status: 'active' | 'pending' | 'sold'
+  daysOnMarket: number
+  latitude: number
+  longitude: number
+  features: string[]
+  lastUpdated: string
+} 

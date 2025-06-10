@@ -4,14 +4,14 @@ import { Suspense, useRef, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Points, PointMaterial } from '@react-three/drei'
 import * as random from 'maath/random/dist/maath-random.esm'
-import { Vector3 } from 'three'
+import { Vector3, Group, Mesh, Points as ThreePoints } from 'three'
 import dynamic from 'next/dynamic'
 
 // Dynamically import the Canvas component to avoid SSR issues
 const ThreeCanvas = dynamic(() => Promise.resolve(Canvas), { ssr: false })
 
 function StarField({ count = 5000 }) {
-  const ref = useRef()
+  const ref = useRef<ThreePoints>(null)
   const { mouse, viewport } = useThree()
   
   const [sphere] = useMemo(() => [
@@ -48,7 +48,7 @@ function StarField({ count = 5000 }) {
 }
 
 function FloatingGeometry() {
-  const meshRef = useRef()
+  const meshRef = useRef<Mesh>(null)
   const { mouse } = useThree()
 
   useFrame((state) => {
@@ -78,8 +78,8 @@ export function ThreeBackground() {
     <div className="fixed inset-0 -z-10">
       <Suspense fallback={null}>
         <ThreeCanvas>
-        <StarField />
-        <FloatingGeometry />
+          <StarField />
+          <FloatingGeometry />
         </ThreeCanvas>
       </Suspense>
     </div>

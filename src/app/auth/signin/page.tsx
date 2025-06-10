@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { 
   Eye, 
   EyeOff, 
@@ -20,7 +19,8 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 
-export default function SignInPage() {
+// Separate component that uses useSearchParams
+function SignInForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -66,6 +66,132 @@ export default function SignInPage() {
     }
   }
 
+  return (
+    <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-white">Email</Label>
+            <div className="relative">
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`bg-white/10 border-white/20 text-white placeholder-white/50 pl-10 ${
+                  formErrors.email ? 'border-red-500' : ''
+                }`}
+                disabled={isLoading}
+              />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
+            </div>
+            {formErrors.email && (
+              <p className="text-red-400 text-sm">{formErrors.email}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-white">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`bg-white/10 border-white/20 text-white placeholder-white/50 pl-10 pr-10 ${
+                  formErrors.password ? 'border-red-500' : ''
+                }`}
+                disabled={isLoading}
+              />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {formErrors.password && (
+              <p className="text-red-400 text-sm">{formErrors.password}</p>
+            )}
+          </div>
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg"
+            >
+              <p className="text-red-400 text-sm text-center">{error}</p>
+            </motion.div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-white text-black hover:bg-gray-200"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                Sign In
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/20" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-black text-gray-400">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" disabled>
+              Google
+            </Button>
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" disabled>
+              Apple
+            </Button>
+          </div>
+
+          <p className="text-center text-sm text-gray-400">
+            Don't have an account?{' '}
+            <Link href="/auth/signup" className="text-white hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Loading fallback component
+function SignInLoading() {
+  return (
+    <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-center h-40">
+          <Loader2 className="w-8 h-8 animate-spin text-white/50" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function SignInPage() {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
       {/* Animated Background */}
@@ -117,114 +243,9 @@ export default function SignInPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white">Email</Label>
-                    <div className="relative">
-                      <Input
-                        id="email"
-                        type="email"
-                      placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      className={`bg-white/10 border-white/20 text-white placeholder-white/50 pl-10 ${
-                        formErrors.email ? 'border-red-500' : ''
-                      }`}
-                      disabled={isLoading}
-                    />
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
-                    </div>
-                  {formErrors.email && (
-                    <p className="text-red-400 text-sm">{formErrors.email}</p>
-                  )}
-                  </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      className={`bg-white/10 border-white/20 text-white placeholder-white/50 pl-10 pr-10 ${
-                        formErrors.password ? 'border-red-500' : ''
-                      }`}
-                      disabled={isLoading}
-                    />
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
-                      disabled={isLoading}
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {formErrors.password && (
-                    <p className="text-red-400 text-sm">{formErrors.password}</p>
-                  )}
-                </div>
-
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg"
-                  >
-                    <p className="text-red-400 text-sm text-center">{error}</p>
-                  </motion.div>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full bg-white text-black hover:bg-gray-200"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    <>
-                      Sign In
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/20" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-black text-gray-400">Or continue with</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" disabled>
-                    Google
-                  </Button>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" disabled>
-                    Apple
-                  </Button>
-                </div>
-
-                <p className="text-center text-sm text-gray-400">
-                  Don't have an account?{' '}
-                  <Link href="/auth/signup" className="text-white hover:underline">
-                    Sign up
-                  </Link>
-                </p>
-              </form>
-            </CardContent>
-          </Card>
+          <Suspense fallback={<SignInLoading />}>
+            <SignInForm />
+          </Suspense>
         </motion.div>
 
         {/* Demo hint */}

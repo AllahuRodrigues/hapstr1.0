@@ -77,15 +77,15 @@ export function EagleMap() {
   // Initialize Google Maps
   useEffect(() => {
     const initMap = async () => {
-      if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-        setError('Google Maps API key not found. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file')
+      if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY) {
+        setError('Google Maps API key not found. Add NEXT_PUBLIC_GOOGLE_MAPS_KEY to your .env.local file')
         setLoading(false)
         return
       }
 
       try {
         const loader = new Loader({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+          apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY,
           version: 'weekly',
           libraries: ['places', 'geometry']
         })
