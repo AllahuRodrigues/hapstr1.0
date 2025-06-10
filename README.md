@@ -1,160 +1,223 @@
-# HapSTR - Complete Real Estate Platform Implementation
+# HapSTR - NYC Property Analytics Platform
 
-## 🏠 Overview
-A fully functional AR-like 3D real estate platform built with Next.js 14, TypeScript, and live Zillow API integration. Features include eagle-eye 3D maps, property search, detailed building information, investment analysis, and comprehensive property data.
+HapSTR is a modern web application that provides real-time property analytics and visualization for New York City properties. Built with Next.js 15, it combines multiple mapping technologies, real-time data, and a beautiful user interface to deliver an immersive property exploration experience.
 
-## 🚀 Key Features Implemented
+## 🌟 Features
 
-### 1. Live Zillow API Integration
-- **Real-time Property Search**: Polygon-based search using Zillow's `propertyByPolygon` endpoint
-- **Building Details**: Complete building information including photos, floor plans, amenities
-- **Property Analytics**: Zestimates, rent estimates, walk/bike/transit scores
-- **Price History**: Historical pricing data and market comparables
-- **Multiple Endpoints**: Property details, building info, pricing, scores, comps
+- **Interactive 3D Map Visualization**
+  - Real-time property data visualization
+  - 3D building rendering with Mapbox GL JS
+  - Eagle-eye view for better property context
+  - Dynamic property markers and clustering
 
-### 2. 3D Eagle-Eye Mapping
-- **Google Maps WebGL**: 60° tilted satellite view for eagle-eye perspective
-- **Interactive Markers**: Click-to-fly navigation between properties
-- **Dynamic Loading**: Properties load automatically as you navigate the map
-- **Search Integration**: Location search with smooth map transitions
-- **California Focus**: Restricted bounds for California real estate
+- **Advanced Property Analytics**
+  - Real-time property value tracking
+  - Historical data analysis
+  - Borough-wise statistics
+  - Property type distribution
+  - Investment potential indicators
 
-### 3. Property Cards & Details
-- **Interactive Cards**: Hover effects with glassmorphism design
-- **Slide-out Details**: Comprehensive property information in side panels
-- **Tabbed Interface**: Overview, floor plans, amenities, policies, scores
-- **Photo Galleries**: Multiple property images with responsive grid
-- **Investment Analysis**: ROI calculations and rental yield estimates
+- **Authentication System**
+  - Secure Supabase authentication
+  - Email/password authentication
+  - Social login integration (coming soon)
+  - Protected routes and middleware
 
-### 4. Advanced Search & Filtering
-- **Location Search**: Neighborhoods, addresses, landmarks in California
-- **Auto-complete**: Real-time search suggestions
-- **Result Filtering**: Property types, price ranges, features
-- **Demo Data**: Fallback system ensures functionality without API keys
+- **Modern UI/UX**
+  - Responsive design
+  - Dark mode support
+  - Smooth animations with Framer Motion
+  - Interactive data visualizations
 
-## 🛠 Technical Implementation
+## 🛠️ Technology Stack
 
-### API Routes (`/api/`)
-```
-/api/building/[zpid]/route.ts       - Building details from Zillow
-/api/property/[zpid]/route.ts       - Comprehensive property data
-/api/properties/search/route.ts     - Property search with polygon
-```
+- **Frontend Framework**: Next.js 15.3.3
+- **Styling**: Tailwind CSS
+- **State Management**: React Hooks
+- **Authentication**: Supabase Auth
+- **Maps**: 
+  - Mapbox GL JS (3D visualization)
+  - Google Maps API (geocoding)
+- **UI Components**: Custom shadcn/ui components
+- **Animations**: Framer Motion
+- **Type Safety**: TypeScript
 
-### Components
-```
-components/
-├── eagle-map.tsx                   - Main 3D map component
-├── property-card.tsx               - Property cards with detail sheets
-├── search-bar.tsx                  - Location search with autocomplete
-└── ui/                            - Reusable UI components
-    ├── sheet.tsx                  - Slide-out panels
-    ├── tabs.tsx                   - Tabbed interfaces
-    ├── skeleton.tsx               - Loading states
-    ├── alert.tsx                  - Error states
-    └── ...
+## 📦 Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/hapstr10.git
+cd hapstr10
 ```
 
-### Types & Interfaces (`lib/types.ts`)
-- **ZillowProperty**: Property search results
-- **BuildingDetails**: Complete building information
-- **PropertyDetails**: Investment and analysis data
-- **FloorPlan**: Unit layouts and pricing
-- **PetPolicy**: Pet restrictions and fees
-- **ParkingPolicy**: Parking availability and costs
+2. Install dependencies:
+```bash
+pnpm install
+```
 
-## 🔑 API Credentials Used
-- **RapidAPI Zillow Key**: `0fd50ff40fmshf5c3ce46017f1d7p1ee5efjsnb91a7145da45`
-- **Host**: `zillow-com1.p.rapidapi.com`
-- **Endpoints**: All major Zillow endpoints integrated
+3. Create a `.env.local` file in the root directory with the following variables:
+```env
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
+NEXT_PUBLIC_GOOGLE_MAPS_KEY=your_google_maps_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-## 📊 Data Sources
-1. **Property Search**: Zillow's propertyByPolygon API
-2. **Building Details**: Zillow's building endpoint
-3. **Property Analytics**: Multiple Zillow endpoints (zestimate, rentEstimate, walkScore)
-4. **Price History**: Zillow's priceAndTaxHistory endpoint
-5. **Market Comps**: Zillow's propertyComps endpoint
+4. Run the development server:
+```bash
+pnpm dev
+```
+
+## 🗺️ Map Implementation
+
+### Mapbox Integration
+The application uses Mapbox GL JS for 3D visualization with the following features:
+- Custom 3D building layer
+- Dynamic property markers
+- Interactive property selection
+- Real-time data updates
+- Custom map styles and controls
+
+### Google Maps Integration
+Google Maps API is used for:
+- Geocoding services
+- Address validation
+- Location search
+- Reverse geocoding
+
+## 🔐 Authentication System
+
+The authentication system is built using Supabase Auth with the following features:
+
+### Implementation Details
+- Client-side authentication using `useAuth` hook
+- Protected routes with middleware
+- Session management
+- Secure token handling
+- Automatic session refresh
+
+### Authentication Flow
+1. User enters credentials
+2. Supabase Auth validates credentials
+3. JWT token is generated and stored
+4. Session is maintained across page refreshes
+5. Protected routes check for valid session
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js app directory
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Dashboard pages
+│   └── layout.tsx         # Root layout
+├── components/            # React components
+│   ├── ui/               # UI components
+│   ├── map/              # Map-related components
+│   └── auth/             # Auth-related components
+├── hooks/                # Custom React hooks
+├── lib/                  # Utility functions
+├── types/                # TypeScript type definitions
+└── middleware.ts         # Next.js middleware
+```
+
+## 🚀 Key Components
+
+### ThreeBackground
+- 3D star field animation
+- Interactive particle system
+- Performance optimized rendering
+
+### EagleMap
+- Mapbox GL JS integration
+- Property data visualization
+- Interactive markers
+- Real-time updates
+
+### PropertyCard
+- Property information display
+- Interactive elements
+- Responsive design
+- Loading states
+
+## 🔄 Data Flow
+
+1. **Property Data**
+   - NYC Open Data API integration
+   - Real-time property updates
+   - Caching for performance
+   - Error handling
+
+2. **User Data**
+   - Supabase database integration
+   - Real-time updates
+   - Secure data handling
+   - Optimistic updates
 
 ## 🎨 UI/UX Features
-- **Glassmorphism Design**: Modern translucent cards with backdrop blur
-- **Responsive Layout**: Mobile-first design with adaptive breakpoints
-- **Loading States**: Skeleton loaders and animated spinners
-- **Error Handling**: Graceful fallbacks with demo data
-- **Accessibility**: Proper ARIA labels and keyboard navigation
 
-## 🏗 Architecture
+- **Responsive Design**
+  - Mobile-first approach
+  - Adaptive layouts
+  - Touch-friendly interactions
 
-### Server-Side Rendering
-- **Next.js 14**: App router with server components
-- **API Route Handlers**: Secure server-side API calls
-- **Caching**: Edge caching for optimal performance
-- **Error Boundaries**: Graceful error handling
+- **Animations**
+  - Page transitions
+  - Loading states
+  - Interactive elements
+  - Smooth scrolling
 
-### Client-Side Features
-- **React Hooks**: State management for maps and property data
-- **TypeScript**: Full type safety across the application
-- **Parallel Requests**: Concurrent API calls for better performance
-- **Debounced Search**: Optimized search performance
-
-## 🔧 Key Integrations
-
-### Google Maps
-```typescript
-// 3D eagle-eye configuration
-const mapInstance = new google.maps.Map(mapRef.current, {
-  center: DEFAULT_CENTER,
-  zoom: 12,
-  mapTypeId: 'satellite',
-  tilt: 60, // Eagle-eye perspective
-  heading: 0,
-  restriction: { latLngBounds: CALIFORNIA_BOUNDS }
-})
-```
-
-### Zillow API
-```typescript
-// Multiple endpoint integration
-const [propertyRes, zestimateRes, rentEstimateRes, walkScoreRes] = 
-  await Promise.allSettled([
-    fetch(`/api/property/${zpid}`),
-    fetch(`/api/zestimate/${zpid}`),
-    fetch(`/api/rentEstimate/${zpid}`),
-    fetch(`/api/walkScore/${zpid}`)
-  ])
-```
-
-## 📱 Demo Features
-- **Live Property Search**: Real-time Zillow data
-- **3D Navigation**: Smooth eagle-eye transitions
-- **Investment Analysis**: Comprehensive property metrics
-- **Property Details**: Floor plans, amenities, policies
-- **Market Data**: Price history and comparable properties
-
-## 🚀 Performance Optimizations
-- **API Caching**: Server-side caching with revalidation
-- **Image Optimization**: Next.js Image component with fallbacks
-- **Debounced Requests**: Optimized map bounds changes
-- **Parallel Loading**: Concurrent API requests
-- **Lazy Loading**: Progressive property loading
+- **Theme Support**
+  - Dark mode
+  - Custom color schemes
+  - Consistent styling
 
 ## 🔒 Security Features
-- **Server-Side API Keys**: All credentials secured on server
-- **Error Handling**: Graceful degradation without exposing internals
-- **Input Validation**: Sanitized search parameters
-- **CORS Protection**: Proper API route protection
 
-## 🎯 California Real Estate Focus
-- **Geographic Bounds**: Restricted to California coordinates
-- **Local Markets**: San Francisco, Los Angeles, San Diego focus
-- **Property Types**: Condos, houses, townhomes, apartments
-- **Investment Metrics**: Tailored for California market conditions
+- JWT-based authentication
+- Protected API routes
+- Secure environment variables
+- CORS configuration
+- Rate limiting
 
-## 📈 Investment Analysis Features
-- **Zestimate Integration**: Current market value estimates
-- **Rent Yield Calculations**: Monthly rental income potential
-- **Walk Score Analysis**: Neighborhood walkability ratings
-- **Market Comparables**: Similar property pricing
-- **Price History**: Historical value trends
-- **Transit Scores**: Public transportation accessibility
+## 🚀 Deployment
 
-This implementation provides a complete, production-ready real estate platform with live data integration, 3D visualization, and comprehensive property analysis capabilities. 
+The application can be deployed to any platform that supports Next.js:
+
+1. Build the application:
+```bash
+pnpm build
+```
+
+2. Start the production server:
+```bash
+pnpm start
+```
+
+## 📈 Performance Optimizations
+
+- Dynamic imports
+- Image optimization
+- Code splitting
+- Caching strategies
+- Lazy loading
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- NYC Open Data for property information
+- Mapbox for mapping services
+- Google Maps for geocoding
+- Supabase for authentication
+- Next.js team for the amazing framework 
