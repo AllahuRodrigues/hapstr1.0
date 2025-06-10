@@ -68,40 +68,270 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 pnpm dev
 ```
 
-## 🗺️ Map Implementation
+## 🗺️ Detailed Map Implementation Guide
 
-### Mapbox Integration
-The application uses Mapbox GL JS for 3D visualization with the following features:
-- Custom 3D building layer
-- Dynamic property markers
-- Interactive property selection
-- Real-time data updates
-- Custom map styles and controls
+### Understanding the Map System
 
-### Google Maps Integration
-Google Maps API is used for:
-- Geocoding services
-- Address validation
-- Location search
-- Reverse geocoding
+The application uses two mapping systems working together:
 
-## 🔐 Authentication System
+1. **Mapbox GL JS** (Primary Map)
+   - A powerful JavaScript library for interactive maps
+   - Provides 3D building visualization
+   - Handles real-time property data display
+   - Manages user interactions and map controls
 
-The authentication system is built using Supabase Auth with the following features:
+2. **Google Maps API** (Supporting Services)
+   - Handles address lookups and geocoding
+   - Provides location search functionality
+   - Validates addresses and coordinates
+   - Converts between addresses and coordinates
 
-### Implementation Details
-- Client-side authentication using `useAuth` hook
-- Protected routes with middleware
-- Session management
-- Secure token handling
-- Automatic session refresh
+### How the Map Works
 
-### Authentication Flow
-1. User enters credentials
-2. Supabase Auth validates credentials
-3. JWT token is generated and stored
-4. Session is maintained across page refreshes
-5. Protected routes check for valid session
+#### 1. Mapbox Setup and Configuration
+```typescript
+// Initialize Mapbox with your access token
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+// Create a new map instance
+const map = new mapboxgl.Map({
+  container: 'map', // HTML element ID
+  style: 'mapbox://styles/mapbox/dark-v11', // Map style
+  center: [-74.006, 40.7128], // NYC coordinates
+  zoom: 12,
+  pitch: 60, // 3D tilt
+  bearing: 0
+});
+```
+
+#### 2. 3D Building Layer
+```typescript
+// Add 3D building layer
+map.addLayer({
+  'id': '3d-buildings',
+  'source': 'composite',
+  'source-layer': 'building',
+  'filter': ['==', 'extrude', 'true'],
+  'type': 'fill-extrusion',
+  'minzoom': 15,
+  'paint': {
+    'fill-extrusion-color': '#aaa',
+    'fill-extrusion-height': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      15,
+      0,
+      15.05,
+      ['get', 'height']
+    ],
+    'fill-extrusion-base': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      15,
+      0,
+      15.05,
+      ['get', 'min_height']
+    ],
+    'fill-extrusion-opacity': 0.6
+  }
+});
+```
+
+#### 3. Property Markers
+```typescript
+// Add property markers
+properties.forEach(property => {
+  const marker = new mapboxgl.Marker({
+    color: getBoroughColor(property.borough)
+  })
+    .setLngLat([property.longitude, property.latitude])
+    .setPopup(new mapboxgl.Popup().setHTML(`
+      <h3>${property.address}</h3>
+      <p>Value: $${property.assessland}</p>
+    `))
+    .addTo(map);
+});
+```
+
+### Map Features in Detail
+
+1. **3D Building Visualization**
+   - Buildings are rendered in 3D using height data
+   - Color-coded based on property value or type
+   - Interactive hover and click effects
+   - Smooth transitions and animations
+
+2. **Property Markers**
+   - Dynamic clustering for dense areas
+   - Color-coded by borough
+   - Interactive popups with property details
+   - Smooth animations on hover/click
+
+3. **Map Controls**
+   - Zoom in/out buttons
+   - Compass for rotation
+   - 3D building toggle
+   - Map style switcher
+   - Fullscreen mode
+
+4. **User Interactions**
+   - Click to select properties
+   - Hover for quick info
+   - Drag to pan
+   - Pinch/scroll to zoom
+   - Double-click to zoom in
+
+## 🔌 API Integration Guide
+
+### 1. NYC Open Data API
+
+The application fetches property data from NYC's Open Data API:
+
+```typescript
+// Fetch property data
+const fetchProperties = async () => {
+  const response = await fetch(
+    'https://data.cityofnewyork.us/resource/64uk-42ks.json'
+  );
+  const data = await response.json();
+  return data.map(formatProperty);
+};
+```
+
+#### Property Data Structure
+```typescript
+interface Property {
+  borough: string;
+  block: number;
+  lot: number;
+  address: string;
+  latitude: number;
+  longitude: number;
+  assessland: number;
+  assesstot: number;
+  exempttot: number;
+  yearbuilt: number;
+  landuse: string;
+  ownername: string;
+}
+```
+
+### 2. Mapbox API
+
+#### Authentication
+```typescript
+// Initialize Mapbox
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+```
+
+#### Map Styles
+- Dark theme: `mapbox://styles/mapbox/dark-v11`
+- Satellite: `mapbox://styles/mapbox/satellite-v9`
+- Streets: `mapbox://styles/mapbox/streets-v12`
+
+#### Custom Map Controls
+```typescript
+// Add navigation controls
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+// Add geolocation control
+map.addControl(new mapboxgl.GeolocateControl({
+  positionOptions: {
+    enableHighAccuracy: true
+  },
+  trackUserLocation: true
+}));
+```
+
+### 3. Google Maps API
+
+#### Geocoding Service
+```typescript
+// Convert address to coordinates
+const geocodeAddress = async (address: string) => {
+  const geocoder = new google.maps.Geocoder();
+  const result = await geocoder.geocode({ address });
+  return result.results[0].geometry.location;
+};
+```
+
+#### Reverse Geocoding
+```typescript
+// Convert coordinates to address
+const reverseGeocode = async (lat: number, lng: number) => {
+  const geocoder = new google.maps.Geocoder();
+  const result = await geocoder.geocode({
+    location: { lat, lng }
+  });
+  return result.results[0].formatted_address;
+};
+```
+
+### 4. Supabase Authentication
+
+#### User Authentication Flow
+```typescript
+// Sign in function
+const signIn = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+  
+  if (error) throw error;
+  return data;
+};
+```
+
+#### Session Management
+```typescript
+// Check authentication status
+const checkAuth = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session;
+};
+```
+
+## 📊 Data Visualization
+
+### Property Analytics
+```typescript
+// Calculate borough statistics
+const calculateBoroughStats = (properties: Property[]) => {
+  return properties.reduce((stats, property) => {
+    const borough = property.borough;
+    if (!stats[borough]) {
+      stats[borough] = {
+        totalProperties: 0,
+        totalValue: 0,
+        averageValue: 0
+      };
+    }
+    stats[borough].totalProperties++;
+    stats[borough].totalValue += property.assessland;
+    return stats;
+  }, {});
+};
+```
+
+### Real-time Updates
+```typescript
+// Subscribe to property updates
+const subscribeToUpdates = () => {
+  const subscription = supabase
+    .channel('property_updates')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'properties'
+    }, (payload) => {
+      updatePropertyOnMap(payload.new);
+    })
+    .subscribe();
+};
+```
 
 ## 📁 Project Structure
 
