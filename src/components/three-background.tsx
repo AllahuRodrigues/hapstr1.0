@@ -3,16 +3,27 @@
 import { useRef, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Points, PointMaterial } from '@react-three/drei'
-import * as random from 'maath/random/dist/maath-random.esm'
-import { Vector3 } from 'three'
+import * as THREE from 'three'
 
 function StarField({ count = 5000 }) {
-  const ref = useRef()
+  const ref = useRef<THREE.Points>(null)
   const { mouse, viewport } = useThree()
   
-  const [sphere] = useMemo(() => [
-    random.inSphere(new Float32Array(count * 3), { radius: 1.5 })
-  ], [count])
+  const [sphere] = useMemo(() => {
+    const positions = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      const radius = Math.random() * 1.5
+      const u = Math.random()
+      const v = Math.random()
+      const theta = 2 * Math.PI * u
+      const phi = Math.acos(2 * v - 1)
+      
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta)
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
+      positions[i * 3 + 2] = radius * Math.cos(phi)
+    }
+    return [positions]
+  }, [count])
 
   useFrame((state, delta) => {
     if (ref.current) {
@@ -44,7 +55,7 @@ function StarField({ count = 5000 }) {
 }
 
 function FloatingGeometry() {
-  const meshRef = useRef()
+  const meshRef = useRef<THREE.Mesh>(null)
   const { mouse } = useThree()
 
   useFrame((state) => {

@@ -4,9 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Set Mapbox token
-if (process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
-  mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoiYWxsYWh1cm9kcmlndWVzMSIsImEiOiJjbWJseGhvejQwdnI4MmtxdjFsNnNpcmJlIn0.BGZw6Nn0uBvZ3nopVD3I3A'
+
+if (MAPBOX_TOKEN) {
+  mapboxgl.accessToken = MAPBOX_TOKEN
 }
 
 interface NYCProperty {

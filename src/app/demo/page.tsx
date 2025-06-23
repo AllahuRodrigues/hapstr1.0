@@ -11,7 +11,6 @@ import {
   DollarSign,
   Home,
   Calendar,
-  Layers,
   Info,
   ExternalLink
 } from 'lucide-react'
@@ -234,18 +233,6 @@ export default function DemoPage() {
                 />
               )}
               
-              {/* Map Controls */}
-              <div className="absolute top-4 left-4 space-y-2">
-                <Button size="sm" className="bg-black/80 hover:bg-black/90 text-white">
-                  <Layers className="w-4 h-4 mr-2" />
-                  3D Buildings
-                </Button>
-                <Button size="sm" variant="outline" className="bg-black/80 border-white/20 text-white hover:bg-black/90">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Satellite
-                </Button>
-              </div>
-
               {/* Data Source Badge */}
               <div className="absolute bottom-4 right-4">
                 <Badge className="bg-green-500 text-white">

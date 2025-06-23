@@ -56,4 +56,16 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom popup styles for enhanced hover effects */
+.custom-popup .mapboxgl-popup-content {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.custom-popup .mapboxgl-popup-tip {
+  border-top-color: rgba(0, 0, 0, 0.95) !important;
 } 
